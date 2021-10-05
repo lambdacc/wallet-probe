@@ -19,6 +19,7 @@ import           Data.Default                        (def)
 import           Data.Text.Prettyprint.Doc           (Pretty (..), viaShow)
 import           GHC.Generics                        (Generic)
 import           Issuer
+import           Holder
 import           Checker
 import           Plutus.Contract                     (ContractError)
 import           Plutus.PAB.Effects.Contract.Builtin (Builtin, SomeBuiltin (..), BuiltinHandler(contractHandler))
@@ -43,6 +44,7 @@ main = void $ Simulator.runSimulationWith handlers $ do
 
 data StarterContracts =
       IssuerContract
+    | HolderContract
     | CheckerContract
     deriving (Eq, Ord, Show, Generic)
 
@@ -64,12 +66,14 @@ instance Pretty StarterContracts where
     pretty = viaShow
 
 instance Builtin.HasDefinitions StarterContracts where
-    getDefinitions = [IssuerContract,CheckerContract]
+    getDefinitions = [IssuerContract,HolderContract,CheckerContract]
     getSchema =  \case
         IssuerContract -> Builtin.endpointsToSchemas @Issuer.IssuerSchema
+        HolderContract -> Builtin.endpointsToSchemas @Holder.HolderSchema
         CheckerContract -> Builtin.endpointsToSchemas @Checker.CheckerSchema
     getContract = \case
         IssuerContract -> SomeBuiltin (Issuer.endpoints @ContractError)
+        HolderContract -> SomeBuiltin (Holder.endpoints @ContractError)
         CheckerContract -> SomeBuiltin (Checker.endpoints @ContractError)
 
 handlers :: SimulatorEffectHandlers (Builtin StarterContracts)
