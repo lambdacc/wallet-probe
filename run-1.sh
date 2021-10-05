@@ -1,5 +1,5 @@
 #!/bin/bash
-printf "\nCheck if an NFT exists in a wallet.\n"
+printf "\nThis demo showcases checking for an NFT exists in a wallet.\n"
 sleep 1
 
 printf "\n"
@@ -18,8 +18,7 @@ export HolderWB_IID=$(curl -s -H "Content-Type: application/json" -X POST -d '{"
 export CheckerW_IID=$(curl -s -H "Content-Type: application/json" -X POST -d '{"caID": "CheckerContract", "caWallet":{"getWalletId": '$CheckerW'}}' http://localhost:9080/api/contract/activate | jq .unContractInstanceId | tr -d '"')
 printf "\nThere are four wallets. 1 NFT Issuer, 2 NFT holders and 1 NFT Checker\n"
 printf "\nThere are 2 categories of NFTs minted in this example - GOLD and SILVER\n"
-printf "\nHolder A gets GOLD and HolderB gets SILVER from the Issuer\n"
-printf "\nThe currency symbol is the same as the issuer here is the same\n"
+printf "\nHolder A gets 'GOLD' nft and Holder B gets 'SILVER' nft from the Issuer\n"
 
 sleep 2
 printf "\n1. Log the currency symbol for reference.\n"
@@ -37,7 +36,7 @@ sleep 2
 curl -H "Content-Type: application/json" -X POST -d '{"tn":"SILVER", "destW":{"getWalletId": '$HolderWB'}}' http://localhost:9080/api/contract/instance/$IssuerW_IID/endpoint/mint
 sleep 1
 
-printf "\n3. Checker wallet now tries to find GOLD NFT in both wallets\n"
+printf "\n3. Checker wallet now tries to find GOLD NFT in both wallets. You'll see in pab server logs that NFT is found inside wallet A only.\n"
 read -n1 -r -p "Press any key to continue..." key
 printf "\n"
 curl -H "Content-Type: application/json" -X POST -d '{"nftTokenName":"GOLD", "issuerWallet":{"getWalletId": '$IssuerW'}, "holderWallet":{"getWalletId": '$HolderWA'}}' http://localhost:9080/api/contract/instance/$CheckerW_IID/endpoint/findNFT
@@ -46,7 +45,7 @@ curl -H "Content-Type: application/json" -X POST -d '{"nftTokenName":"GOLD", "is
 printf "\n"
 sleep 1
 
-printf "\n3. Checker wallet now tries to find SILVER NFT in both wallets\n"
+printf "\n3. Checker wallet now tries to find SILVER NFT in both wallets. You'll see in pab server logs that NFT is found inside wallet B only.\n"
 read -n1 -r -p "Press any key to continue..." key
 printf "\n"
 curl -H "Content-Type: application/json" -X POST -d '{"nftTokenName":"SILVER", "issuerWallet":{"getWalletId": '$IssuerW'}, "holderWallet":{"getWalletId": '$HolderWA'}}' http://localhost:9080/api/contract/instance/$CheckerW_IID/endpoint/findNFT
